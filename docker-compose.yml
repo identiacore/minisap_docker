@@ -1,0 +1,51 @@
+services:
+
+
+  # This is a container with SAP ABAP trial, which can be used to test the API integration.
+  # It uses the following image:
+  # https://hub.docker.com/r/sapse/abap-cloud-developer-trial
+  # The requirements for it are:
+  #   - 16GB of RAM
+  #   - 4 CPUs
+  #   - 150GB of disk space
+  # How to update the licenses
+  # ABAP Platform (AS ABAP)
+  #
+  # You can check the expiry date of your ABAP license in the transaction SLICENSE in SAPGUI.
+  # You may wish to set a reminder to update your license, since it is easier to do so before expiry.
+  #
+  # Updating the license via SAPGUI (SLICENSE) The ABAP license supplied with the Docker image lasts only three months.
+  # Therefore, you should download and import the demo license as follows:
+  #   - Logon to your ABAP system with the user SAP*, client 000, same password as for DEVELOPER (DEVELOPER , client 001, is locked).
+  #   - Start transaction SLICENSE; copy the hardware key.
+  #   - Get the license from minisap , choosing the system A4H.
+  #   - Back in your ABAP System, start SLICENSE again, then choose Install.
+  #   - Log off, then log on with the user DEVELOPER, client 001.
+  #   - Start SLICENSE again; remove the old invalid licenses. (sap* is not allowed to delete licenses).
+  #
+  # User and Passwords
+  # The user name is DEVELOPER. The client is either 001 for development or 000 for some admin tasks. The password is:
+  #
+  # ABAP Cloud Developer Trial 2022: ABAPtr2022#00
+  # This is also predefined (same password) for client 000, client 001: SAP* , DDIC.
+  #
+  # Corresponding docker command:
+  # docker run --stop-timeout 3600 -it --name a4h -h vhcala4hci  sapse/abap-cloud-developer-trial:ABAPTRIAL_2022 -agree-to-sap-license
+  sap:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3200:3200"
+      - "3300:3300"
+      - "8443:8443"
+      - "30213:30213"
+      - "50000:50000"
+      - "50001:50001"
+    tty: true
+    container_name: a4h
+    hostname: vhcala4hci
+    stop_grace_period: 2h
+    command: [ "-agree-to-sap-license", "-skip-limits-check", "-skip-hostname-check"]
+    sysctls:
+      kernel.shmmni: 32768
